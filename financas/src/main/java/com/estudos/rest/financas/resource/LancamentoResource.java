@@ -12,6 +12,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,11 +48,13 @@ public class LancamentoResource {
 	private MessageSource messageSource;
 	
 	@GetMapping
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO')")
 	public List<Lancamento> pesquisar(LancamentoFilter lancamentoFilter){
 		return lancamentoRepository.filtrar(lancamentoFilter);
 	}
 	
 	@PostMapping
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO')")
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Lancamento> incluirLancamento(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response){
 		Lancamento lancamentoSalvo = lancamentoService.salvar(lancamento);
@@ -61,6 +64,7 @@ public class LancamentoResource {
 	}
 	
 	@GetMapping("/{codigo}")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO')")
 	public Lancamento buscarPorCodigo(@PathVariable Integer codigo){
 		return lancamentoRepository.findOne(codigo);
 	}
@@ -74,6 +78,7 @@ public class LancamentoResource {
 	}
 	
 	@DeleteMapping("/{codigo}")
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_LANCAMENTO')")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void removerLancamento(@PathVariable Integer codigo){
 		lancamentoRepository.delete(codigo);
